@@ -67,7 +67,7 @@ Then run **node app.js**
 <br />
 You should see something like this in your terminal
 <br />  
-![alt text](https://github.com/jenriellegaon/blockchain-training-labs/blob/master/startFabric.png)
+![alt text](https://github.com/jeffcamz/fabric-sample-invoice/blob/master/Hyperledger%20Documentation%20Pics/startfabric.png)
 <br />
 <br />
 
@@ -75,7 +75,7 @@ You should see something like this in your terminal
 <br />
 You should see something like this in your terminal
 <br />
-![alt text](https://github.com/jenriellegaon/blockchain-training-labs/blob/master/enrollAdmin.png)
+![alt text](https://github.com/jeffcamz/fabric-sample-invoice/blob/master/Hyperledger%20Documentation%20Pics/enroll.png)
 <br />
 <br />
 
@@ -83,7 +83,7 @@ You should see something like this in your terminal
 <br />
 You should see something like this in your terminal
 <br />
-![alt text](https://github.com/jenriellegaon/blockchain-training-labs/blob/master/registerUser.png)
+![alt text](https://github.com/jeffcamz/fabric-sample-invoice/blob/master/Hyperledger%20Documentation%20Pics/register.png)
 <br />
 <br />
 
@@ -91,28 +91,38 @@ You should see something like this in your terminal
 <br />
 You should see something like this in your terminal
 <br />
-![alt text](https://github.com/jenriellegaon/blockchain-training-labs/blob/master/app.png)
-<br />
-<br />
-
-#### Step4:
-Test the endpoints using **POSTMAN** or **INSOMNIA REST Client**
+![alt text](https://github.com/jeffcamz/fabric-sample-invoice/blob/master/Hyperledger%20Documentation%20Pics/app.js.png)
 <br />
 <br />
 
 #### Testing Endpoints
 
-#### Display All Invoices
-##### http://localhost:3000/
-##### Use the GET http request in this function as we are getting data
+Test the endpoints using **POSTMAN** or **INSOMNIA REST Client**
+**Note:**  You must always use **Form URL Encoded** as a structure
+<br />
+<br />
+
+
+####1. Display All Invoices - Getting all the invoice that is register
+http://localhost:3000/
+Use the GET http request in this function as we are getting data
+
+**Note:** Select **Form URL Encoded** as a structure and type on the new name **username** and the value must be the username that is belong to our **registerUser.js** since those username are the only have an access to view or to get the data.
+
+In the very first GET, you will see the first data that is already initialize from the code. 
+
+##### List of usernames
++ IBM - Supplier
++ Lotus - OEM
++ UnionBank - Bank
 <br />
 <br />
 <br />
 
-#### Raise Invoice
-##### http://localhost:3000/invoice
-##### Use the POST http request in this function as we are pushing data
-Select **Form URL Encoded** as a structure
+####2. Raise Invoice - Posting or resgister data.
+http://localhost:3000/invoice
+Use the POST http request in this function as we are pushing data
+
 ##### Parameters
 + invoiceid
 + invoicenum
@@ -126,24 +136,23 @@ Select **Form URL Encoded** as a structure
 + repaid
 + repaymentamount
 
-##### NOTE: gr , ispaid , paidamount , repaid , repaymentamount default values are as follows N , N , 0 , N , 0
-**gr = N**
+**NOTE:** gr , ispaid , paidamount , repaid , repaymentamount default values are as follows false , false , 0 , false , 0 don't need to declare its value it will automatically generate. Also only the supplier can generate a new invoic
+**gr = false**
 <br />
-**ispaid = N**
+**ispaid = false**
 <br />
 **paidamount = 0**
 <br />
-**repaid = N**
+**repaid = false**
 <br />
 **repaymentamount = 0**
 <br />
 <br />
 <br />
 
-#### Goods Received
-##### http://localhost:3000/invoice
-##### Use the PUT http request in this function as we are modifying a data
-Select **Form URL Encoded** as a structure
+####3. Goods Received
+http://localhost:3000/invoice
+Use the PUT http request in this function as we are modifying a data
 
 ##### Parameters
 + invoiceid
@@ -152,10 +161,9 @@ Select **Form URL Encoded** as a structure
 <br />
 <br />
 
-#### Bank Payment to Supplier
-##### http://localhost:3000/invoice
-##### Use the PUT http request in this function as we are modifying a data
-Select **Form URL Encoded** as a structure
+####4. Bank Payment to Supplier
+http://localhost:3000/invoice
+Use the PUT http request in this function as we are modifying a data
 
 ##### Parameters
 + invoiceid
@@ -164,17 +172,10 @@ Select **Form URL Encoded** as a structure
 <br />
 <br />
 
-#### OEM Repays to Bank
-##### http://localhost:3000/invoice
-##### Use the PUT http request in this function as we are modifying a data
-Select **Form URL Encoded** as a structure
+####5. OEM Repays to Bank
+http://localhost:3000/invoice
+Use the PUT http request in this function as we are modifying a data
 
 ##### Parameters
 + invoiceid
 + repaid
-<br />
-<br />
-<br />
-
-
-#### Next steps will be published soon# fabric-sample-invoice

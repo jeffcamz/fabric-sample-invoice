@@ -1,9 +1,10 @@
+//Utils use
 var Fabric_Client = require('fabric-client');
 var path = require('path');
 var util = require('util');
 var os = require('os');
 
-//
+
 var fabric_client = new Fabric_Client();
 
 // setup the fabric network
@@ -13,7 +14,7 @@ channel.addPeer(peer);
 var order = fabric_client.newOrderer('grpc://localhost:7050')
 channel.addOrderer(order);
 
-//
+
 var store_path = path.join(__dirname, 'hfc-key-store');
 console.log('Store path:'+store_path);
 var tx_id = null;
@@ -39,27 +40,24 @@ Fabric_Client.newDefaultKeyValueStore({ path: store_path
 fabric_client.setStateStore(state_store);
 var crypto_suite = Fabric_Client.newCryptoSuite();
 
-// use the same location for the state store (where the users' certificate are kept)
-// and the crypto store (where the users' keys are kept)
 var crypto_store = Fabric_Client.newCryptoKeyStore({path: store_path});
 crypto_suite.setCryptoKeyStore(crypto_store);
 fabric_client.setCryptoSuite(crypto_suite);
 
+//variable for getUserContext
+var username = req.body.username;
 
-var sUser = req.body.username;
-console.log(sUser);
-// get the enrolled user from persistence, this user will sign all requests
-return fabric_client.getUserContext(sUser, true);
+//sign all the request by getting the enrolled user
+return fabric_client.getUserContext(username, true);
 }).then((user_from_store) => {
-  console.log(user_from_store);
 if (user_from_store && user_from_store.isEnrolled()) {
-console.log("Successfully loaded from persistence");
+
+var username = req.body.username;
+console.log('Successfully loaded'+ username +'from persistence');
 member_user = user_from_store;
-console.log(member_user);
 } else {
-  var sUser = req.body.username;
-  res.json(sUser + " is not registered to do this transaction");
-throw new Error( sUser + " is not registered to do this transaction");
+var username = req.body.username;
+throw new Error(username + "is not registered to the network");
 }
 
 // get a transaction id object based on the current user assigned to fabric client
@@ -72,6 +70,7 @@ var request = {
   txId: tx_id
 };
 
+//Initialize our parameters
 var raiseinvoice = [];
 var invoiceid = req.body.invoiceid;
 var invoicenum = req.body.invoicenum;
@@ -88,112 +87,80 @@ var repaymentamount = req.body.repaymentamount;
 raiseinvoice.push(invoiceid);
 if (req.method == "POST")
 {
-  var sUser = req.body.username;
+  var username = req.body.username;
 
-  // IBM is our Supplier
-  // This should not let other registered users to do this transaction
-  if(sUser != "IBM" ){
-    
-    res.json(sUser + " is not allowed to do this transaction");
-    throw new Error(sUser + " is not allowed to do this transaction");
+  //IBM is our supplier
+  // not registered to other users
+
+  if(username!= "IBM"){
+    res.json(username + "is not allowed to do this transaction");
+    throw new Error(username + "is not allowed to do this transaction");
   }
 
-  else{
-    // gr = 'false';
-    // ispaid = 'false';
-    // paidamount = '0';
-    // repaid = 'false';
-    // repaymentamount = '0';
-
+  else 
+  {
     request.fcn='raiseInvoice';
     raiseinvoice.push(invoicenum);
     raiseinvoice.push(billedto);
     raiseinvoice.push(invoicedate);
     raiseinvoice.push(invoiceamount); 
     raiseinvoice.push(itemdescription);
-    // raiseinvoice.push(gr); 
-    // raiseinvoice.push(ispaid);
-    // raiseinvoice.push(paidamount); 
-    // raiseinvoice.push(repaid);
-    // raiseinvoice.push(repaymentamount); 
   }
+
 }
 
 else if(req.method == "PUT")
 {
-    if(gr)
+    if(gr)    
     {
-        // Lotus is our OEM
-        // This should not let other registered users to do this transaction
-          var sUser = req.body.username;
-
-          if(sUser != "Lotus"){
-            res.json(sUser + " is not allowed to do this transaction");
-            throw new Error(sUser + " is not allowed to do this transaction");
-          }
-
-          else{
-            //UPDATE state if goods are received
-            //DEFAULT state is No
-            request.fcn= 'receivedGoods',
-            raiseinvoice.push(gr);
-          }
+    if (username != "Lotus"){
+     res.json(username + " is not allowed to do this transaction.");
+     throw new Error(username + " is not allowed to do this transaction.");
     }
-    
+    else {
+        request.fcn= 'isGoodsReceived',
+        raiseinvoice.push(gr);
+    }
+  }
     else if(paidamount)
     {
-          var sUser = req.body.username;
-
-          // Unionbank is our bank
-          // This should not let other registered users to do this transaction
-          if(sUser != "Unionbank"){
-            res.json(sUser + " is not allowed to do this transaction");
-            throw new Error(sUser + " is not allowed to do this transaction");
-          }
-
-          else{
-            //UPDATE state if banks already paid the supplier
-            //DEFAULT state is No
-            request.fcn= 'paymentToSupplier',
-            //ispaid = 'Y';
-            raiseinvoice.push(paidamount);
-            //raiseinvoice.push(ispaid);
-          }
+      if (username != "UBP"){
+        res.json(username + " is not allowed to do this transaction.");
+        throw new Error(username + " is not allowed to do this transaction.");
+       }
+       else {
+        request.fcn= 'isPaidToSupplier',
+        raiseinvoice.push(paidamount);
     }
-
+  }
     else if(repaymentamount)
     {
-        var sUser = req.body.username;
+      var username = req.body.username;
 
-
-        if(sUser != "Lotus"){
-          // Lotus and Tivoli is our OEM
-          // This should not let other registered users to do this transaction
-          res.json(sUser + " is not allowed to do this transaction");
-          throw new Error(sUser + " is not allowed to do this transaction");
-        }
-
-        else{
-          
-          //UPDATE state if OEM already repaid the bank
-          //DEFAULT state is No
-          request.fcn= 'paymentToBank',
-          //repaid = "Y";
-          raiseinvoice.push(repaymentamount);
-          //raiseinvoice.push(repaid);
-        }
+    
+      if(username!= "Lotus"){
+        res.json(username + " is not allowed to do this transaction.");
+        throw new Error(username + " is not allowed to do this transaction.");
+      }
+    
+      else 
+      {
+        request.fcn= 'isPaidToBank',
+        raiseinvoice.push(repaymentamount);
     }
 }
+}
+
 
 request.args=raiseinvoice;
 console.log(request);
 
-// // return 
 res.json({
-  Function: request.fcn,
-  Inputs: request.args,
+  Function:request.fcn,
+  Inputs:request.args,
   Result: "Success"
 });
+
 
 // send the transaction proposal to the peers
 return channel.sendTransactionProposal(request);
@@ -219,22 +186,14 @@ proposalResponses: proposalResponses,
 proposal: proposal
 };
 
-// set the transaction listener and set a timeout of 30 sec
-// if the transaction did not get committed within the timeout period,
-// report a TIMEOUT status
 var transaction_id_string = tx_id.getTransactionID(); //Get the transaction ID string to be used by the event processing
 var promises = [];
 
 var sendPromise = channel.sendTransaction(request);
 promises.push(sendPromise); //we want the send transaction first, so that we know where to check status
 
-// get an eventhub once the fabric client has a user assigned. The user
-// is required bacause the event registration must be signed
 let event_hub = channel.newChannelEventHub(peer);
 
-// using resolve the promise so that result status may be processed
-// under the then clause rather than having the catch clause process
-// the status
 let txPromise = new Promise((resolve, reject) => {
 let handle = setTimeout(() => {
 event_hub.unregisterTxEvent(transaction_id_string);
@@ -246,7 +205,6 @@ event_hub.registerTxEvent(transaction_id_string, (tx, code) => {
 // first some clean up of event listener
 clearTimeout(handle);
 
-// now let the application know what happened
 var return_status = {event_status : code, tx_id : transaction_id_string};
 if (code !== 'VALID') {
 console.error('The transaction was invalid, code = ' + code);
@@ -259,7 +217,7 @@ resolve(return_status);
 //this is the callback if something goes wrong with the event registration or processing
 reject(new Error('There was a problem with the eventhub ::'+err));
 },
-{disconnect: true} //disconnect when complete
+{disconnect: true} //disconnect if transaction is complete
 );
 event_hub.connect();
 
@@ -267,7 +225,9 @@ event_hub.connect();
 promises.push(txPromise);
 
 return Promise.all(promises);
-} else {
+} else { // user input error
+res.json({"status": "604"});
+//res.json({"Incorrect user input"});
 console.error('Failed to send Proposal or receive valid response. Response null or status is not 200. exiting...');
 throw new Error('Failed to send Proposal or receive valid response. Response null or status is not 200. exiting...');
 }
@@ -282,12 +242,12 @@ console.error('Failed to order the transaction. Error code: ' + results[0].statu
 
 if(results && results[1] && results[1].event_status === 'VALID') {
 console.log('Successfully committed the change to the ledger by the peer');
-                // res.json({'result': 'success'});
+          //      res.json({'result': 'success'});
 } else {
 console.log('Transaction failed to be committed to the ledger due to ::'+results[1].event_status);
 }
 }).catch((err) => {
-console.error('Failed to invoke :: ' + err);
+console.error('Failed to invoke successfully :: ' + err);
 });
 
 
@@ -309,23 +269,24 @@ var crypto_store = Fabric_Client.newCryptoKeyStore({path: store_path});
 crypto_suite.setCryptoKeyStore(crypto_store);
 fabric_client.setCryptoSuite(crypto_suite);
 
-// get the enrolled user from persistence, this user will sign all requests
-var sUser = req.body.username;
-console.log(sUser);
+////variable for getUserContext
+var username = req.body.username;
 
-return fabric_client.getUserContext(sUser, true);
+// signing all the request by getting the enrolled user
+return fabric_client.getUserContext(username, true);
 }).then((user_from_store) => {
-  console.log(user_from_store);
 if (user_from_store && user_from_store.isEnrolled()) {
-//console.log("Successfully loaded " + sUser +" from persistence");
+
+var username = req.body.username;
+console.log('Successfully loaded'+ username +'from persistence');
 member_user = user_from_store;
 } else {
-  var sUser = req.body.username;
-  res.json(sUser + " is not registered to do this transaction");
-throw new Error(sUser + "  is not registered to do this transaction");
+var username = req.body.username;
+res.json(username + " is not allowed to do this transaction.");
+throw new Error(username + "is not registered to the network");
 }
 
-// displayAllInvoices chaincode function - requires no arguments , ex: args: [''],
+// displayAllInvoices chaincode function requires empty argument (args[''])
 const request = {
 
 //targets : --- letting this default to the peers assigned to the channel
@@ -336,8 +297,7 @@ args: ['']
 
 var ar = [];
 var attr = req.query.attr;
-var invoice = req.query.invoice;
-
+var invoiceid = req.query.invoiceid;
 if (attr){
   
   ar.push(attr);
@@ -345,15 +305,12 @@ if (attr){
   request.args = ar;
 }
 
-else if (invoice)
-{
-  ar.push(invoice);
-  request.fcn='getInvoiceAuditHistory';
+else if (invoiceid){
+  
+  ar.push(invoiceid);
+  request.fcn='getAuditHistoryForInvoice';
   request.args = ar;
 }
-
-
-
 
 // send the query proposal to the peer
 return channel.queryByChaincode(request);
@@ -371,34 +328,32 @@ console.log("Response is ", query_responses[0].toString());
 console.log("No payloads were returned from query");
 }
 }).catch((err) => {
+  res.json("Username is not registered successfully");
+  
 console.error('Failed to query successfully :: ' + err);
 });
 })
-
+//testing the user1 which it will bot be needed
 app.get('/block', function (req, res) {
 
-  var sUser = req.body.username;
-  // create the key value store as defined in the fabric-client/config/default.json 'key-value-store' setting
+
   Fabric_Client.newDefaultKeyValueStore({ path: store_path
   }).then((state_store) => {
-  // assign the store to the fabric client
+
   fabric_client.setStateStore(state_store);
   var crypto_suite = Fabric_Client.newCryptoSuite();
-  // use the same location for the state store (where the users' certificate are kept)
-  // and the crypto store (where the users' keys are kept)
+
   var crypto_store = Fabric_Client.newCryptoKeyStore({path: store_path});
   crypto_suite.setCryptoKeyStore(crypto_store);
   fabric_client.setCryptoSuite(crypto_suite);
-  
-  // get the enrolled user from persistence, this user will sign all requests
-  return fabric_client.getUserContext(sUser, true);
+
+  return fabric_client.getUserContext('user1', true);
   }).then((user_from_store) => {
-    console.log(user_from_store);
   if (user_from_store && user_from_store.isEnrolled()) {
-  console.log("Successfully loaded" + sUser + "from persistence");
+  console.log('Successfully loaded user1 from persistence');
   member_user = user_from_store;
   } else {
-  throw new Error("Failed to get run registerUser.js");
+  throw new Error('Failed to get user1.... run registerUser.js');
   }
 
   
