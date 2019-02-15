@@ -5,10 +5,8 @@
 #### OS: Xubuntu (Ubuntu 18.04.1 LTS)
 
 
-### NOTE: GOPATH must be correctly set in your local machine
-You can check if go is properly installed by running **go version** in your terminal
+Check first your go first if it is set correctly. You can check if go is properly installed by running **go version** in your terminal
 <br />
-Check also if gopath is correct. Run **echo $GOPATH**
 
 Make sure you have a **basic-network** from fabric-sample if not click here[`click here`](https://github.com/hyperledger/fabric-samples) to get git clone fabric-sample copy the basic-network and paste it in the folder fabric-sample-invoice
 
