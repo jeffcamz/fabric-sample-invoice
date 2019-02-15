@@ -33,13 +33,13 @@ Then copy the **go/** folder in this repository or simply create a new folder na
 #### Step3:
 Open terminal then change directory to **/fabric-sample-invoice/invoice/**
 Then run **./startFabric.sh** -This will  spin up a blockchain network comprising peers, orderers, certificate authorities and more.
-<br />
+
 Then run **npm install** - Install the Fabric dependencies for the applications.
-<br />
+
 Then run **node enrollAdmin.js** -  Uses a Certificate Signing Request (CSR) — the private and public key are first generated locally and the public key is then sent to the CA which returns an encoded certificate for use by the application.
-<br />
+
 Then run **node registerUser.js** - enroll a new user including the Supplier, OEM and Bank
-<br />
+
 Then run **node app.js** - Run the application
 <br />
 
@@ -55,6 +55,7 @@ Test the endpoints using **POSTMAN** or **INSOMNIA REST Client**
 **1.** Display All Invoices - Getting all the invoice that is register
 <br/>
 Use the GET http request in this function as we are getting data. 
+
 Browse at http://localhost:3000/
 
 **Note:** Select **Form URL Encoded** as a structure and type on the new name **username** and the value must be the username that is belong to our **registerUser.js** since those username are the only have an access to view or to get the data.
