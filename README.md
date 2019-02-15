@@ -24,76 +24,25 @@ Then copy all files under blockchain-training-labs/**node/** in this repository 
 <br />
 **NOTE:** Do not include **node_modules/**
 
-##### Output:
-
-<pre>fabric-sample-invoice/
-  | ---- invoice/
-              | ---- app.js
-              | ---- enrollAdmin.js
-              | ---- package.json
-              | ---- registerUser.js
-              | ---- startFabric.sh
-</pre>
-
 #### Step2:
 Create a folder **invoice** under **fabric-sample-invoice/chaincode/**
 <br />
 Then copy the **go/** folder in this repository or simply create a new folder named **go/** inside **fabric-sample-invoice/chaincode/invoice/** then paste it to the directory
 <br />
 
-##### Output:
-
-<pre>fabric-sample-invoice/
-  | ---- chaincode/
-              | ---- invoice/
-                          | ---- go/
-                                      | ---- invoice.go
-</pre>
-
 #### Step3:
 Open terminal then change directory to **/fabric-sample-invoice/invoice/**
-Then run **./startFabric.sh**
+Then run **./startFabric.sh** -This will  spin up a blockchain network comprising peers, orderers, certificate authorities and more.
 <br />
-Then run **npm install**
+Then run **npm install** - Install the Fabric dependencies for the applications.
 <br />
-Then run **node enrollAdmin.js**
+Then run **node enrollAdmin.js** -  Uses a Certificate Signing Request (CSR) — the private and public key are first generated locally and the public key is then sent to the CA which returns an encoded certificate for use by the application.
 <br />
-Then run **node registerUser.js**
+Then run **node registerUser.js** - enroll a new user including the Supplier, OEM and Bank
 <br />
-Then run **node app.js**
-<br />
-
-**./startFabric.sh**
-<br />
-You should see something like this in your terminal
-<br />  
-![alt text](https://github.com/jeffcamz/fabric-sample-invoice/blob/master/Hyperledger%20Documentation%20Pics/startfabric.png)
-<br />
+Then run **node app.js** - Run the application
 <br />
 
-**node enrollAdmin.js**
-<br />
-You should see something like this in your terminal
-<br />
-![alt text](https://github.com/jeffcamz/fabric-sample-invoice/blob/master/Hyperledger%20Documentation%20Pics/enroll.png)
-<br />
-<br />
-
-**node registerUser.js**
-<br />
-You should see something like this in your terminal
-<br />
-![alt text](https://github.com/jeffcamz/fabric-sample-invoice/blob/master/Hyperledger%20Documentation%20Pics/register.png)
-<br />
-<br />
-
-**node app.js**
-<br />
-You should see something like this in your terminal
-<br />
-![alt text](https://github.com/jeffcamz/fabric-sample-invoice/blob/master/Hyperledger%20Documentation%20Pics/app.js.png)
-<br />
-<br />
 
 #### Testing Endpoints
 
@@ -103,9 +52,10 @@ Test the endpoints using **POSTMAN** or **INSOMNIA REST Client**
 <br />
 
 
-####1. Display All Invoices - Getting all the invoice that is register
-http://localhost:3000/
-Use the GET http request in this function as we are getting data
+**1.** Display All Invoices - Getting all the invoice that is register
+<br/>
+Use the GET http request in this function as we are getting data. 
+Browse at http://localhost:3000/
 
 **Note:** Select **Form URL Encoded** as a structure and type on the new name **username** and the value must be the username that is belong to our **registerUser.js** since those username are the only have an access to view or to get the data.
 
@@ -119,8 +69,10 @@ In the very first GET, you will see the first data that is already initialize fr
 <br />
 <br />
 
-####2. Raise Invoice - Posting or resgister data.
-http://localhost:3000/invoice
+**The next steps must be run on http://localhost:3000/invoice**
+
+**2.** Raise Invoice - Posting or resgister data.
+<br/>
 Use the POST http request in this function as we are pushing data
 
 ##### Parameters
@@ -137,6 +89,7 @@ Use the POST http request in this function as we are pushing data
 + repaymentamount
 
 **NOTE:** gr , ispaid , paidamount , repaid , repaymentamount default values are as follows false , false , 0 , false , 0 don't need to declare its value it will automatically generate. Also only the supplier can generate a new invoic
+<br/>
 **gr = false**
 <br />
 **ispaid = false**
@@ -150,7 +103,7 @@ Use the POST http request in this function as we are pushing data
 <br />
 <br />
 
-####3. Goods Received
+**3.** Goods Received
 http://localhost:3000/invoice
 Use the PUT http request in this function as we are modifying a data
 
@@ -161,7 +114,7 @@ Use the PUT http request in this function as we are modifying a data
 <br />
 <br />
 
-####4. Bank Payment to Supplier
+**4.** Bank Payment to Supplier
 http://localhost:3000/invoice
 Use the PUT http request in this function as we are modifying a data
 
@@ -172,7 +125,7 @@ Use the PUT http request in this function as we are modifying a data
 <br />
 <br />
 
-####5. OEM Repays to Bank
+**5.** OEM Repays to Bank
 http://localhost:3000/invoice
 Use the PUT http request in this function as we are modifying a data
 
